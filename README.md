@@ -76,7 +76,8 @@ export class TestMoel extends JsonSerializable<TestMoel> {
 
 #### 装饰器
 包含4种装饰器：
-* JSON对象简值装饰器 `JsonProp(check)` =>check默认为true 可以设置false 用来控制属性的改变是否触发对象的原有的$watch事件
+* JSON对象简值装饰器 `JsonProp(check)` =>check默认为true 可以设置false 
+* 用来控制属性的改变是否触发对象的原有的$watch事件
   (PS:一般设在string number 这种值类型非结构化属性访问器上)
 
 responseModel.ts
@@ -106,9 +107,11 @@ export class TestMoel extends JsonSerializable<TestMoel> {
 </code>
 </pre>
 
-* JSON对象引用装饰器 `@JsonModel(Classtype,check,recursion)` => 装饰器要求传入引用对象的Class类型 且该Class 必须继承 JsonSerializable<T> 
-  check默认为true 可以设置false 用来控制属性的改变是否触发对象的原有的$watch事件  object.json_object = new jsonClass() 触发
-  recursion 递归 默认为true修改子属性对象上的属性值则会触发父对象的$watch
+* JSON对象引用装饰器 `@JsonModel(Classtype,check,recursion)` => 装饰器要求传入引用对象的Class类型 
+* 该Class 必须继承 JsonSerializable<T> 
+* check默认为true 可以设置false 用来控制属性的改变是否触发对象的原有的$watch事件  object.json_object = new jsonClass() 触发
+* recursion 递归 默认为true修改子属性对象上的属性值则会触发父对象的$watch
+  
   example: 
        
         test.inner = new TestMoel();
