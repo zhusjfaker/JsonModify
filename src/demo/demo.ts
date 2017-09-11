@@ -5,7 +5,7 @@ export class Demo {
         test = new TestMoel();
         test.$watch = (data) => {
             /** 赋值触发的观察回调事件 data=>test当前 */
-          console.log(data);
+            console.log(data);
         };
         /** 赋值触发以上的回调事件 */
         test.array = [1, 2, 3];
@@ -17,6 +17,8 @@ export class Demo {
         test.modelarray = [];
         test.modelarray.push(new TestMoel());
         test.modelarray.push(new TestMoel());
+        /** 手动触发对象自检 */
+        test.$check();
         /** 根据注解器转成需要的JSON格式 */
         let a = test.Serializable();
         /** 根据JSON字符串 和类型 生成带有原型实体的对象 */
