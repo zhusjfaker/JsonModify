@@ -5,6 +5,10 @@ Solution about Typescript in JsonSerializable
 ## 代码环境
 * 需要配置NG2的core和Rxjs 加载环境进行npm i/install 恢复代码依赖
 
+## 推荐插件
+
+* typescript-toolbox alt+shift+G 自动生成getter/setter 选择器
+
 ## 文件结构
 
 #### _base
