@@ -119,8 +119,8 @@ export class TestMoel extends JsonSerializable<TestMoel> {
 </code>
 </pre>
 
-* JSON对象引用装饰器 `@JsonModel(Classtype,check,recursion)` => 装饰器要求传入引用对象的Class类型 
-* 该Class 必须继承 JsonSerializable<T> 
+* JSON对象引用装饰器 `@JsonModel(T,check,recursion)` => 装饰器要求传入引用对象的Class类型 
+* 该 T 必须继承 JsonSerializable<T> 
 * check默认为true 可以设置false 用来控制属性的改变是否触发对象的原有的$watch事件  object.json_object = new jsonClass() 触发
 * recursion 递归 默认为true修改子属性对象上的属性值则会触发父对象的$watch
   
@@ -190,5 +190,39 @@ export class TestMoel extends JsonSerializable<TestMoel> {
 
 </code>
 </pre>
+
+* JSON对象引用数组装饰器 `@JsonModelArray(T)`
+* 该 T 必须继承 JsonSerializable<T> 
+* 目前只支持单一类型对象的数组 数组内容有修改时，同样需要工程师手动调用 object.$check()
+
+responseModel.ts
+<pre>
+<code>
+export class TestMoel extends JsonSerializable<TestMoel> {
+
+    constructor() {
+        super();
+    }
+
+    /** 标识为引用类型数组 PS：目前只支持单一类型数组，且该类型同样需要继承 JsonSerializable<T>  */
+    @JsonModelArray(TestMoel)
+    public get modelarray(): TestMoel[] {
+        return this._modelarray;
+    }
+
+    public set modelarray(value: TestMoel[]) {
+        this._modelarray = value;
+    }
+    private _modelarray: TestMoel[];
+
+    ...... ......
+    ...... ......
+}
+
+</code>
+</pre>
+
+
+
 
 
