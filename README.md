@@ -7,7 +7,7 @@ Solution about Typescript in JsonSerializable
 
 ## 推荐插件
 
-* typescript-toolbox alt+shift+G 自动生成getter/setter 选择器
+* typescript-toolbox   alt+shift+G 自动生成getter/setter 选择器
 
 ## 文件结构
 
