@@ -102,7 +102,19 @@ export class TestMoel extends JsonSerializable<TestMoel> {
     ...... ......
     ...... ......
 }
+
 </code>
 </pre>
+
+* JSON对象引用装饰器 @JsonModel(Classtype,check,recursion) => 装饰器要求传入引用对象的Class类型 且该Class 必须继承 JsonSerializable<T> 
+  check默认为true 可以设置false 用来控制属性的改变是否触发对象的原有的$watch事件  object.json_object = new jsonClass() 触发
+  recursion 递归 默认为true修改子属性对象上的属性值则会触发父对象的$watch
+  example: 
+       
+        test.inner = new TestMoel();
+        test.inner.name = "666"; //触发test.$watch
+        test.inner.age = 888; //触发test.$watch
+
+  (PS:一般设在object 这种引用类型结构化属性访问器上)
 
 
