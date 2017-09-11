@@ -58,6 +58,25 @@ JsonSerializable<T>
    注意：ModelClass extends JsonSerializable<ModelClass> 还原类型必须继承本抽象类！
 
 
+#### 抽象类使用实例代码
+responseModel.ts
+<pre>
+<code>
+export class TestMoel extends JsonSerializable<TestMoel> {
+
+    constructor() {
+        super();
+    }
+
+    .... .....
+    .... .....
+}
+</code>
+</pre>
+
+
+
+
 
 #### 装饰器
 包含4种装饰器：
