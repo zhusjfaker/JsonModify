@@ -5,6 +5,14 @@ Solution about Typescript in JsonSerializable
 ## 代码环境
 * 需要配置NG2的core和Rxjs 加载环境进行npm i/install 恢复代码依赖
 
+## 文件结构
+
+#### _base
+* jsonModify.ts 核心操作类
+#### demo
+* responseModel.ts 实例响应实体
+* demo.ts 操作类操作响应实体，实现实例代码
+
 ## 工具使用说明
 
 #### 抽象类
