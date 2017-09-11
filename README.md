@@ -74,10 +74,35 @@ export class TestMoel extends JsonSerializable<TestMoel> {
 </code>
 </pre>
 
-
-
-
-
 #### 装饰器
 包含4种装饰器：
-* JsonProp(check) =>check默认为true 可以设置false 用来控制属性的改变是否触发对象的原有的$watch事件
+* JSON对象简值装饰器 JsonProp(check) =>check默认为true 可以设置false 用来控制属性的改变是否触发对象的原有的$watch事件
+  (PS:一般设在string number 这种值类型非结构化属性访问器上)
+
+responseModel.ts
+<pre>
+<code>
+export class TestMoel extends JsonSerializable<TestMoel> {
+
+    constructor() {
+        super();
+    }
+
+    private _name: string;
+    
+    /** 标识为一般值类型的属性用JsonProp */
+    @JsonProp()
+    public get name(): string {
+        return this._name;
+    }
+    public set name(value: string) {
+        this._name = value;
+    }
+
+    ...... ......
+    ...... ......
+}
+</code>
+</pre>
+
+
