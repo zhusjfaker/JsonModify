@@ -222,7 +222,19 @@ export class TestMoel extends JsonSerializable<TestMoel> {
 </code>
 </pre>
 
+#### 生成JSON字符串/还原对象
 
+example:
+   
+   demo.ts
 
+<pre>
+<code>
+    /** 根据注解器转成需要的JSON格式 */
+    let a = test.Serializable();
+    /** 根据JSON字符串 和类型 生成带有原型实体的对象 */
+    let obj = TestMoel.InstanceOf('{"name":"123","age":12,....}', TestMoel);
+</code>
+</pre>
 
 
