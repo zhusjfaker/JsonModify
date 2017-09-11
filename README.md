@@ -53,9 +53,9 @@ JsonSerializable<T>
 *  `$watch` 订阅后提交触发自己的回调函数 若为null 则不触发。
 *  `$check()` 手动触发$call的提交事件，PS一般作用在数组属性或递归子数组属性 有长度内容变化时手动提交对象自检。
 *  `json_object.Serializable()` 转化装饰器构建的JSON字符串 PS： json_object instanceof JsonSerializable<any> ==true
-*  `ModelClass.InstanceOf<ModelClass>(json,ModelClass)` 用于还原JSON对象包含JS原型 静态方法 
-   调用实例 还原类型.InstanceOf(json字符串，还原类型)=>ModelClass.InstanceOf<ModelClass>(json,ModelClass)
-   注意：ModelClass extends JsonSerializable<ModelClass> 还原类型必须继承本抽象类！
+*  `ModelClass.InstanceOf<ModelClass>(json,ModelClass)` 用于还原JSON对象包含JS原型 静态方法
+*  调用实例 还原类型.InstanceOf(json字符串，还原类型)=>ModelClass.InstanceOf<ModelClass>(json,ModelClass)
+*  `注意：ModelClass extends JsonSerializable<ModelClass> 还原类型必须继承本抽象类！`
 
 
 #### 抽象类使用实例代码
