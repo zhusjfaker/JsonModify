@@ -120,7 +120,7 @@ export class TestMoel extends JsonSerializable<TestMoel> {
 
   (PS:一般设在object 这种引用类型结构化属性访问器上)
 
-  responseModel.ts
+responseModel.ts
 <pre>
 <code>
 export class TestMoel extends JsonSerializable<TestMoel> {
@@ -140,6 +140,37 @@ export class TestMoel extends JsonSerializable<TestMoel> {
     }
 
     private _inner: TestMoel;
+
+    ...... ......
+    ...... ......
+}
+
+</code>
+</pre>
+
+
+* JSON简值数组引用装饰器 `@JsonPropArray()` => 数组修改必须手动调用object.$check()方法 目前尚待改进
+(PS: 一般作用在简单的string[] / number[])
+
+responseModel.ts
+<pre>
+<code>
+export class TestMoel extends JsonSerializable<TestMoel> {
+
+    constructor() {
+        super();
+    }
+
+    /** 标识为值类型数组 一般为string[] number[] */
+    @JsonPropArray()
+    public get array(): number[] {
+        return this._array;
+    }
+    public set array(value: number[]) {
+        this._array = value;
+    }
+
+    private _array: number[];
 
     ...... ......
     ...... ......
