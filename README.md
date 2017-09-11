@@ -117,4 +117,32 @@ export class TestMoel extends JsonSerializable<TestMoel> {
 
   (PS:一般设在object 这种引用类型结构化属性访问器上)
 
+  responseModel.ts
+<pre>
+<code>
+export class TestMoel extends JsonSerializable<TestMoel> {
+
+    constructor() {
+        super();
+    }
+
+    /** 标识为引用类型的属性用JsonModel PS: 该引用类型必须继承 JsonSerializable<T> 且加载访问器上  */
+    @JsonModel(TestMoel)
+    public get inner(): TestMoel {
+        return this._inner;
+    }
+
+    public set inner(value: TestMoel) {
+        this._inner = value;
+    }
+
+    private _inner: TestMoel;
+
+    ...... ......
+    ...... ......
+}
+
+</code>
+</pre>
+
 
