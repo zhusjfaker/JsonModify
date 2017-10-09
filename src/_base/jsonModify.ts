@@ -1,5 +1,4 @@
 import { EventEmitter } from '@angular/core';
-
 export function JsonProp(check: boolean = true) {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
         if (!target.$$JsonPropList) {
@@ -16,7 +15,6 @@ export function JsonProp(check: boolean = true) {
         }
     }
 }
-
 export function JsonModel(T: any, check: boolean = true, recursion: boolean = true) {
     return function (target, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
         if (!target.$$JsonModelList) {
@@ -40,7 +38,6 @@ export function JsonModel(T: any, check: boolean = true, recursion: boolean = tr
         }
     }
 }
-
 export function JsonPropArray() {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
         if (!target.$$JsonPropArrayList) {
@@ -59,13 +56,9 @@ export function JsonModelArray(T: any) {
         target.$$JsonModelArrayTypeMap.set(propertyKey, T);
     }
 }
-
 export abstract class JsonSerializable<T> {
-
     public $call: EventEmitter<T> = new EventEmitter<T>();
-
     public $watch: Function;
-
     constructor() {
         /** 表层触发回调 */
         this.$call.subscribe(data => {
@@ -74,21 +67,17 @@ export abstract class JsonSerializable<T> {
             }
         });
     }
-
     public $check(): void {
         let submit: EventEmitter<any> = Reflect.get(this, "$call");
         submit.emit(this);
     }
-
     public Serializable(): string {
         let obj = this.Subline(this);
         return JSON.stringify(obj);
     };
-
     public SerializableObject(): any {
         return this.Subline(this);
     };
-
     private Subline(item: JsonSerializable<T>): any {
         if (!item) {
             return null;
@@ -154,7 +143,6 @@ export class JsonConvert {
         }
         return standard;
     }
-
     private static pullBuffer(item: any, standard: any): any {
         var orginal = Object.getPrototypeOf(standard);
         if (orginal.$$JsonPropList && orginal.$$JsonPropList.length > 0) {
@@ -205,10 +193,7 @@ export class JsonConvert {
         return standard;
     }
 }
-
-
 export class ObjectFormSerializable {
-
     public static Parse(data: any): string {
         let obj = "";
         let key: string[] = [];
@@ -222,7 +207,12 @@ export class ObjectFormSerializable {
                         key.push("[" + i + "]");
                         break;
                     case "object":
-                        this.Convert(data[i], key, "[" + i + "]");
+                        if (data[i] != null) {
+                            this.Convert(data[i], key, "[" + i + "]");
+                        }
+                        else {
+                            key.push("[" + i + "]");
+                        }
                         break;
                 }
             }
@@ -233,7 +223,7 @@ export class ObjectFormSerializable {
         /** 获取所有key值 */
         key.every(x => {
             if (eval('data.' + x) === null || eval('data.' + x) === undefined) {
-                obj += "&" + x + "=null";
+                obj += "&" + x + "=";
             }
             else if (eval('data.' + x) != null && typeof eval('data.' + x) == "number") {
                 obj += "&" + x + "=" + eval('data.' + x);
@@ -245,8 +235,6 @@ export class ObjectFormSerializable {
         });
         return obj;
     }
-
-
     private static Convert(data: any, key: string[], top?: string): void {
         Object.keys(data).every(x => {
             let perfix = top != "" ? top + "." : "";
@@ -263,23 +251,28 @@ export class ObjectFormSerializable {
                     key.push(perfix + x);
                     break;
                 case "object":
-                    if (Array.isArray(data[x])) {
-                        for (let i = 0; i < data[x].length; i++) {
-                            switch (typeof data[x][i]) {
-                                case "string":
-                                    key.push(perfix + x + "[" + i + "]");
-                                    break;
-                                case "number":
-                                    key.push(perfix + x + "[" + i + "]");
-                                    break;
-                                case "object":
-                                    this.Convert(data[x][i], key, perfix + x + "[" + i + "]");
-                                    break;
+                    if (data[x] != null) {
+                        if (Array.isArray(data[x])) {
+                            for (let i = 0; i < data[x].length; i++) {
+                                switch (typeof data[x][i]) {
+                                    case "string":
+                                        key.push(perfix + x + "[" + i + "]");
+                                        break;
+                                    case "number":
+                                        key.push(perfix + x + "[" + i + "]");
+                                        break;
+                                    case "object":
+                                        this.Convert(data[x][i], key, perfix + x + "[" + i + "]");
+                                        break;
+                                }
                             }
+                        }
+                        else {
+                            this.Convert(data[x], key, perfix + x);
                         }
                     }
                     else {
-                        this.Convert(data[x], key, perfix + x);
+                        key.push(perfix + x);
                     }
                     break;
             }

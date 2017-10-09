@@ -1,3 +1,4 @@
+import { JsonConvert } from './../_base/jsonModify';
 import { TestMoel } from './responseModel';
 export class Demo {
     constructor() {
@@ -22,7 +23,7 @@ export class Demo {
         /** 根据注解器转成需要的JSON格式 */
         let a = test.Serializable();
         /** 根据JSON字符串 和类型 生成带有原型实体的对象 */
-        let obj = TestMoel.InstanceOf('{"name":"123","age":12,"inner":{"name":"666","age":888,"inner":null,"array":null,"modelarray":null},"array":[1,2,3],"modelarray":[{"name":null,"age":null,"inner":null,"array":null,"modelarray":null},{"name":null,"age":null,"inner":null,"array":null,"modelarray":null}]}', TestMoel);
+        let obj = JsonConvert.InstanceOf<TestMoel>(TestMoel,'{"name":"123","age":12,"inner":{"name":"666","age":888,"inner":null,"array":null,"modelarray":null},"array":[1,2,3],"modelarray":[{"name":null,"age":null,"inner":null,"array":null,"modelarray":null},{"name":null,"age":null,"inner":null,"array":null,"modelarray":null}]}');
         debugger
     }
 }
