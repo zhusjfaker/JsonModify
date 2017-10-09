@@ -233,7 +233,7 @@ example:
     /** 根据注解器转成需要的JSON格式 */
     let a = test.Serializable();
     /** 根据JSON字符串 和类型 生成带有原型实体的对象 */
-    let obj = TestMoel.InstanceOf('{"name":"123","age":12,....}', TestMoel);
+    let obj = JsonConvert.InstanceOf<TestMoel>(TestMoel, '{"name":"123","age":12,....}');
 </code>
 </pre>
 
