@@ -1,4 +1,5 @@
 import { EventEmitter } from '@angular/core';
+
 export function JsonProp(check: boolean = true) {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
         if (!target.$$JsonPropList) {
@@ -15,6 +16,7 @@ export function JsonProp(check: boolean = true) {
         }
     }
 }
+
 export function JsonModel(T: any, check: boolean = true, recursion: boolean = true) {
     return function (target, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
         if (!target.$$JsonModelList) {
@@ -38,6 +40,7 @@ export function JsonModel(T: any, check: boolean = true, recursion: boolean = tr
         }
     }
 }
+
 export function JsonPropArray() {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
         if (!target.$$JsonPropArrayList) {
@@ -56,9 +59,13 @@ export function JsonModelArray(T: any) {
         target.$$JsonModelArrayTypeMap.set(propertyKey, T);
     }
 }
+
 export abstract class JsonSerializable<T> {
+
     public $call: EventEmitter<T> = new EventEmitter<T>();
+
     public $watch: Function;
+
     constructor() {
         /** 表层触发回调 */
         this.$call.subscribe(data => {
@@ -66,18 +73,44 @@ export abstract class JsonSerializable<T> {
                 data.$watch(data);
             }
         });
+        /** 添加对应数组扩扩展方法 */
+        let prototype = <any>(Array.prototype);
+        if (!prototype.SerializableList) {
+            prototype.SerializableList = function () {
+                let list = [];
+                if (this && this.length > 0) {
+                    this.every(p => {
+                        list.push(p.SerializableObject());
+                        return true;
+                    });
+                    return list;
+                }
+                else {
+                    return null;
+                }
+            }
+        }
+        if (!prototype.SerializableListStringify) {
+            prototype.SerializableListStringify = function () {
+                return JSON.stringify(this.SerializableList());
+            };
+        }
     }
+
     public $check(): void {
         let submit: EventEmitter<any> = Reflect.get(this, "$call");
         submit.emit(this);
     }
+
     public Serializable(): string {
         let obj = this.Subline(this);
         return JSON.stringify(obj);
     };
+
     public SerializableObject(): any {
         return this.Subline(this);
     };
+
     private Subline(item: JsonSerializable<T>): any {
         if (!item) {
             return null;
@@ -123,18 +156,12 @@ export class JsonConvert {
         let standard = null;
         try {
             let tempdata = JSON.parse(json);
-            if (tempdata instanceof Array) {
-                standard = [];
-                (<any[]>tempdata).every(x => {
-                    let standard_item = new T();
-                    let obj = this.pullBuffer(x, standard_item);
-                    standard.push(obj);
-                    return true;
-                });
-            }
-            else if (tempdata instanceof Object) {
+            if (tempdata instanceof Object) {
                 standard = new T();
                 this.pullBuffer(tempdata, standard);
+            }
+            else {
+                throw new Error("object type is not Single Object");
             }
         }
         catch (ex) {
@@ -143,6 +170,33 @@ export class JsonConvert {
         }
         return standard;
     }
+
+    /**
+     * static ListOf<T>
+     */
+    public static ListOf<T extends JsonSerializable<any>>(T: any, json: string): JsonList<T> {
+        let standard = null;
+        try {
+            let tempdata = JSON.parse(json);
+            if (tempdata instanceof Array) {
+                standard = [];
+                (<any[]>tempdata).every(x => {
+                    let standard_item = new T();
+                    let obj = this.pullBuffer(x, standard_item);
+                    standard.push(obj);
+                    return true;
+                });
+            } else {
+                throw new Error("object type is not Array");
+            }
+        }
+        catch (ex) {
+            console.log(ex);
+            return null;
+        }
+        return standard;
+    }
+
     private static pullBuffer(item: any, standard: any): any {
         var orginal = Object.getPrototypeOf(standard);
         if (orginal.$$JsonPropList && orginal.$$JsonPropList.length > 0) {
@@ -193,6 +247,7 @@ export class JsonConvert {
         return standard;
     }
 }
+
 export class ObjectFormSerializable {
     public static Parse(data: any): string {
         let obj = "";
@@ -221,18 +276,35 @@ export class ObjectFormSerializable {
             this.Convert(data, key, "");
         }
         /** 获取所有key值 */
-        key.every(x => {
-            if (eval('data.' + x) === null || eval('data.' + x) === undefined) {
-                obj += "&" + x + "=";
-            }
-            else if (eval('data.' + x) != null && typeof eval('data.' + x) == "number") {
-                obj += "&" + x + "=" + eval('data.' + x);
-            }
-            else if (eval('data.' + x) != null && typeof eval('data.' + x) == "string") {
-                obj += "&" + x + "=" + encodeURI(eval('data.' + x));
-            }
-            return true;
-        });
+        if (Array.isArray(data)) {
+            key.every(x => {
+                if (eval('data' + x) === null || eval('data' + x) === undefined) {
+                    obj += "&" + x + "=";
+                }
+                else if (eval('data' + x) != null && typeof eval('data' + x) == "number") {
+                    obj += "&" + x + "=" + eval('data' + x);
+                }
+                else if (eval('data' + x) != null && typeof eval('data' + x) == "string") {
+                    obj += "&" + x + "=" + encodeURI(eval('data' + x));
+                }
+                return true;
+            });
+
+        }
+        else {
+            key.every(x => {
+                if (eval('data.' + x) === null || eval('data.' + x) === undefined) {
+                    obj += "&" + x + "=";
+                }
+                else if (eval('data.' + x) != null && typeof eval('data.' + x) == "number") {
+                    obj += "&" + x + "=" + eval('data.' + x);
+                }
+                else if (eval('data.' + x) != null && typeof eval('data.' + x) == "string") {
+                    obj += "&" + x + "=" + encodeURI(eval('data.' + x));
+                }
+                return true;
+            });
+        }
         return obj;
     }
     private static Convert(data: any, key: string[], top?: string): void {
@@ -281,3 +353,14 @@ export class ObjectFormSerializable {
         return;
     }
 }
+
+export interface JsonList<T extends JsonSerializable<T>> extends Array<T> {
+    SerializableList?(): any[];
+    SerializableListStringify?(): string;
+}
+
+
+
+
+
+
