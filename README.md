@@ -1,6 +1,10 @@
 # JsonModify
 Solution about Typescript in JsonSerializable 
 
+## Version 1.0.1
+* Fix修复了转formdata 数组对象不支持的问题
+* Add 添加了JsonList 接口类型 用来扩展序列化问题
+* Add 添加了支持对Array<JsonSerializable<R>>数组对象的支持批量序列化 和 批量对象还原
 
 ## 代码环境
 * 需要配置NG2的core和Rxjs 加载环境进行npm i/install 恢复代码依赖
@@ -234,6 +238,24 @@ example:
     let a = test.Serializable();
     /** 根据JSON字符串 和类型 生成带有原型实体的对象 */
     let obj = JsonConvert.InstanceOf<TestMoel>(TestMoel, '{"name":"123","age":12,....}');
+</code>
+</pre>
+
+#### 数组生成JSON字符串/还原对象数组
+
+example:
+   
+   demo.ts
+
+<pre>
+<code>
+    /** 新增数组特性 */
+    this.list.push(test);
+    /** 批量序列化 */
+    let objlist = this.list.SerializableList();
+    let str = this.list.SerializableListStringify();
+    /** 数组批量还原 */
+    this.list = JsonConvert.ListOf<TestMoel>(TestMoel, str);
 </code>
 </pre>
 
