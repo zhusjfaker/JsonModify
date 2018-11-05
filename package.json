@@ -1,5 +1,5 @@
 {
-    "name": "jsonmodify",
+    "name": "@zhusj.jayson/jsonmodify",
     "version": "1.0.5",
     "description": "Reactive JSON framework and solution to serialize JSON to typescript-class",
     "main": "index.ts",
