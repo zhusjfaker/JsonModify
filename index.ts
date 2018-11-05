@@ -1,7 +1,6 @@
-import { EventEmitter } from '@angular/core';
-
+import { Subject } from 'rxjs';
 export function JsonProp(check: boolean = true) {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (!target.$$JsonPropList) {
             target.$$JsonPropList = [];
         }
@@ -9,16 +8,15 @@ export function JsonProp(check: boolean = true) {
         /** 自动订阅事件 */
         let nativefunc = descriptor.set;
         descriptor.set = function (value) {
-            nativefunc.apply(this, arguments);
+            nativefunc!.apply(this, arguments);
             if (check) {
-                (<JsonSerializable<any>>this).$call.emit(this);
+                (<JsonSerializable>this).$call.next(this);
             }
         }
     }
 }
-
 export function JsonModel(T: any, check: boolean = true, recursion: boolean = true) {
-    return function (target, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+    return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
         if (!target.$$JsonModelList) {
             target.$$JsonModelList = [];
             target.$$JsonModelTypeMap = new Map<string, any>();
@@ -28,21 +26,20 @@ export function JsonModel(T: any, check: boolean = true, recursion: boolean = tr
         /** 自动订阅事件 */
         let nativefunc = descriptor.set;
         descriptor.set = function (value) {
-            nativefunc.apply(this, arguments);
+            nativefunc!.apply(this, arguments);
             if (check) {
-                (<JsonSerializable<any>>this).$call.emit(this);
+                (<JsonSerializable>this).$call.next(this);
             }
             if (check && recursion) {
-                (<JsonSerializable<any>>value).$call.subscribe(data => {
-                    (<JsonSerializable<any>>this).$call.emit(this);
+                (<JsonSerializable>value).$call.subscribe((data: any) => {
+                    (<JsonSerializable>this).$call.next(this);
                 });
             }
         }
     }
 }
-
 export function JsonPropArray() {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (!target.$$JsonPropArrayList) {
             target.$$JsonPropArrayList = [];
         }
@@ -50,7 +47,7 @@ export function JsonPropArray() {
     }
 }
 export function JsonModelArray(T: any) {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         if (!target.$$JsonModelArrayList) {
             target.$$JsonModelArrayList = [];
             target.$$JsonModelArrayTypeMap = new Map<string, any>();
@@ -59,16 +56,12 @@ export function JsonModelArray(T: any) {
         target.$$JsonModelArrayTypeMap.set(propertyKey, T);
     }
 }
-
-export abstract class JsonSerializable<T> {
-
-    public $call: EventEmitter<T> = new EventEmitter<T>();
-
-    public $watch: Function;
-
+export abstract class JsonSerializable {
+    public $call: Subject<any> = new Subject<any>();
+    public $watch: Function | undefined;
     constructor() {
         /** 表层触发回调 */
-        this.$call.subscribe(data => {
+        this.$call.subscribe((data: any) => {
             if (data.$watch != null) {
                 data.$watch(data);
             }
@@ -77,9 +70,9 @@ export abstract class JsonSerializable<T> {
         let prototype = <any>(Array.prototype);
         if (!prototype.SerializableList) {
             prototype.SerializableList = function () {
-                let list = [];
+                let list: any[] = [];
                 if (this && this.length > 0) {
-                    this.every(p => {
+                    this.every((p: any) => {
                         list.push(p.SerializableObject());
                         return true;
                     });
@@ -96,50 +89,46 @@ export abstract class JsonSerializable<T> {
             };
         }
     }
-
     public $check(): void {
-        let submit: EventEmitter<any> = Reflect.get(this, "$call");
-        submit.emit(this);
+        let submit: Subject<any> = Reflect.get(this, "$call");
+        submit.next(this);
     }
-
     public Serializable(): string {
         let obj = this.Subline(this);
         return JSON.stringify(obj);
     };
-
     public SerializableObject(): any {
         return this.Subline(this);
     };
-
-    private Subline(item: JsonSerializable<T>): any {
+    private Subline(item: JsonSerializable): any {
         if (!item) {
             return null;
         }
-        let result = {};
+        let result: any = {};
         var orginal = Object.getPrototypeOf(item);
         if (orginal.$$JsonPropList && orginal.$$JsonPropList.length > 0) {
             (<any[]>orginal.$$JsonPropList).every(x => {
-                result[x] = item[x] != null ? item[x] : null;
+                result[x] = (item as any)[x] != null ? (item as any)[x] : null;
                 return true;
             });
         }
         if (orginal.$$JsonModelList && orginal.$$JsonModelList.length > 0) {
             (<any[]>orginal.$$JsonModelList).every(x => {
-                result[x] = item[x] != null ? this.Subline(item[x]) : null;
+                result[x] = (item as any)[x] != null ? this.Subline((item as any)[x]) : null;
                 return true;
             });
         }
         if (orginal.$$JsonPropArrayList && orginal.$$JsonPropArrayList.length > 0) {
             (<any[]>orginal.$$JsonPropArrayList).every(x => {
-                result[x] = item[x] instanceof Array && item[x].length > 0 ? item[x] : null;
+                result[x] = (item as any)[x] instanceof Array && (item as any)[x].length > 0 ? (item as any)[x] : null;
                 return true;
             });
         }
         if (orginal.$$JsonModelArrayList && orginal.$$JsonModelArrayList.length > 0) {
             (<any[]>orginal.$$JsonModelArrayList).every(x => {
-                let model_array = [];
-                if (item[x]) {
-                    (<any[]>item[x]).every(y => {
+                let model_array: any[] = [];
+                if ((item as any)[x]) {
+                    (<any[]>(item as any)[x]).every(y => {
                         model_array.push(this.Subline(y));
                         return true;
                     });
@@ -152,7 +141,7 @@ export abstract class JsonSerializable<T> {
     }
 }
 export class JsonConvert {
-    public static InstanceOf<T>(T: any, json: string): T {
+    public static InstanceOf<T>(T: any, json: string): T | null {
         let standard = null;
         try {
             let tempdata = JSON.parse(json);
@@ -165,17 +154,15 @@ export class JsonConvert {
             }
         }
         catch (ex) {
-            console.log(ex);
             return null;
         }
         return standard;
     }
-
     /**
      * static ListOf<T>
      */
-    public static ListOf<T extends JsonSerializable<any>>(T: any, json: string): JsonList<T> {
-        let standard = null;
+    public static ListOf<T extends JsonSerializable>(T: any, json: string): JsonList<T> | null {
+        let standard: any = null;
         try {
             let tempdata = JSON.parse(json);
             if (tempdata instanceof Array) {
@@ -191,12 +178,10 @@ export class JsonConvert {
             }
         }
         catch (ex) {
-            console.log(ex);
             return null;
         }
         return standard;
     }
-
     private static pullBuffer(item: any, standard: any): any {
         var orginal = Object.getPrototypeOf(standard);
         if (orginal.$$JsonPropList && orginal.$$JsonPropList.length > 0) {
@@ -231,7 +216,7 @@ export class JsonConvert {
         }
         if (orginal.$$JsonModelArrayList && orginal.$$JsonModelArrayList.length > 0) {
             (<any[]>orginal.$$JsonModelArrayList).every(x => {
-                let model_array = [];
+                let model_array: any[] = [];
                 if (item != null && item[x] != null && item[x] instanceof Array) {
                     let standerProp_model = orginal.$$JsonModelArrayTypeMap.get(x);
                     (<any[]>item[x]).every(y => {
@@ -248,119 +233,7 @@ export class JsonConvert {
     }
 }
 
-export class ObjectFormSerializable {
-    public static Parse(data: any): string {
-        let obj = "";
-        let key: string[] = [];
-        if (Array.isArray(data)) {
-            for (let i = 0; i < data.length; i++) {
-                switch (typeof data[i]) {
-                    case "string":
-                        key.push("[" + i + "]");
-                        break;
-                    case "number":
-                        key.push("[" + i + "]");
-                        break;
-                    case "object":
-                        if (data[i] != null) {
-                            this.Convert(data[i], key, "[" + i + "]");
-                        }
-                        else {
-                            key.push("[" + i + "]");
-                        }
-                        break;
-                }
-            }
-        }
-        else {
-            this.Convert(data, key, "");
-        }
-        /** 获取所有key值 */
-        if (Array.isArray(data)) {
-            key.every(x => {
-                if (eval('data' + x) === null || eval('data' + x) === undefined) {
-                    obj += "&" + x + "=";
-                }
-                else if (eval('data' + x) != null && typeof eval('data' + x) == "number") {
-                    obj += "&" + x + "=" + eval('data' + x);
-                }
-                else if (eval('data' + x) != null && typeof eval('data' + x) == "string") {
-                    obj += "&" + x + "=" + encodeURI(eval('data' + x));
-                }
-                return true;
-            });
-
-        }
-        else {
-            key.every(x => {
-                if (eval('data.' + x) === null || eval('data.' + x) === undefined) {
-                    obj += "&" + x + "=";
-                }
-                else if (eval('data.' + x) != null && typeof eval('data.' + x) == "number") {
-                    obj += "&" + x + "=" + eval('data.' + x);
-                }
-                else if (eval('data.' + x) != null && typeof eval('data.' + x) == "string") {
-                    obj += "&" + x + "=" + encodeURI(eval('data.' + x));
-                }
-                return true;
-            });
-        }
-        return obj;
-    }
-    private static Convert(data: any, key: string[], top?: string): void {
-        Object.keys(data).every(x => {
-            let perfix = top != "" ? top + "." : "";
-            switch (typeof data[x]) {
-                case "string":
-                    key.push(perfix + x);
-                    break;
-                case "number":
-                    key.push(perfix + x);
-                    break;
-                case "function":
-                    break;
-                case "undefined":
-                    key.push(perfix + x);
-                    break;
-                case "object":
-                    if (data[x] != null) {
-                        if (Array.isArray(data[x])) {
-                            for (let i = 0; i < data[x].length; i++) {
-                                switch (typeof data[x][i]) {
-                                    case "string":
-                                        key.push(perfix + x + "[" + i + "]");
-                                        break;
-                                    case "number":
-                                        key.push(perfix + x + "[" + i + "]");
-                                        break;
-                                    case "object":
-                                        this.Convert(data[x][i], key, perfix + x + "[" + i + "]");
-                                        break;
-                                }
-                            }
-                        }
-                        else {
-                            this.Convert(data[x], key, perfix + x);
-                        }
-                    }
-                    else {
-                        key.push(perfix + x);
-                    }
-                    break;
-            }
-            return true;
-        });
-        return;
-    }
-}
-
-export interface JsonList<T extends JsonSerializable<T>> extends Array<T> {
+export interface JsonList<T extends JsonSerializable> extends Array<T> {
     SerializableList?(): any[];
     SerializableListStringify?(): string;
 }
-
-
-
-
-
-

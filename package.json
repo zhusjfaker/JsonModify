@@ -1,32 +1,24 @@
 {
     "name": "jsonmodify",
-    "version": "1.0.0",
-    "description": "json to object with class/js-proptype",
-    "main": "jsonmodify.ts",
+    "version": "1.0.5",
+    "description": "Reactive JSON framework and solution to serialize JSON to typescript-class",
+    "main": "index.ts",
+    "types": "types/index.d.ts",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/zhusjfaker/JsonModify.git"
-    },
-    "dependencies": {
-        "@angular/common": "^4.0.0",
-        "@angular/compiler": "^4.0.0",
-        "@angular/core": "^4.0.0",
-        "@angular/forms": "^4.0.0",
-        "@angular/http": "^4.0.0",
-        "@angular/platform-browser": "^4.0.0",
-        "@angular/platform-browser-dynamic": "^4.0.0",
-        "@angular/router": "^4.0.0",
-        "core-js": "^2.4.1",
-        "rxjs": "^5.4.2",
-        "zone.js": "^0.8.14"
-    },
-    "author": "zhusj",
+    "keywords": [
+        "serialize",
+        "JSON",
+        "to",
+        "typescript-class",
+        "Reactive",
+        "JSON",
+        "framework"
+    ],
+    "author": "439453290@qq.com",
     "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/zhusjfaker/JsonModify/issues"
-    },
-    "homepage": "https://github.com/zhusjfaker/JsonModify#readme"
+    "dependencies": {
+        "rxjs": "^6.2.2"
+    }
 }
