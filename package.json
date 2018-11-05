@@ -1,6 +1,6 @@
 {
     "name": "@zhusj/jsonmodify",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "Reactive JSON framework and solution to serialize JSON to typescript-class",
     "main": "index.ts",
     "types": "types/index.d.ts",
@@ -20,5 +20,13 @@
     "license": "ISC",
     "dependencies": {
         "rxjs": "^6.2.2"
-    }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zhusjfaker/JsonModify.git"
+    },
+    "bugs": {
+        "url": "https://github.com/zhusjfaker/JsonModify/issues"
+    },
+    "homepage": "https://github.com/zhusjfaker/JsonModify#readme"
 }

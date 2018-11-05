@@ -6,6 +6,10 @@ Solution about Typescript in JsonSerializable
 * Add 添加了JsonList 接口类型 用来扩展序列化问题
 * Add 添加了支持对Array<JsonSerializable<R>>数组对象的支持批量序列化 和 批量对象还原
 
+## 安装
+* npm i @zhusj/jsonmodify -S
+
+
 ## 代码环境
 * 需要配置NG2的core和Rxjs 加载环境进行npm i/install 恢复代码依赖
 
