@@ -8,7 +8,7 @@ export function JsonProp(check: boolean = true) {
         /** 自动订阅事件 */
         let nativefunc = descriptor.set;
         descriptor.set = function (value) {
-            nativefunc!.apply(this, arguments);
+            nativefunc!.apply(this, <any>arguments);
             if (check) {
                 (<JsonSerializable>this).$call.next(this);
             }
@@ -26,7 +26,7 @@ export function JsonModel(T: any, check: boolean = true, recursion: boolean = tr
         /** 自动订阅事件 */
         let nativefunc = descriptor.set;
         descriptor.set = function (value) {
-            nativefunc!.apply(this, arguments);
+            nativefunc!.apply(this, <any>arguments);
             if (check) {
                 (<JsonSerializable>this).$call.next(this);
             }
